@@ -19,16 +19,19 @@
 :- http_handler(root(api/diagnose), api_diagnose, [method(post)]).
 :- http_handler(root(api/batch),    api_batch,    [method(post)]).
 :- http_handler(root(api/experiment), api_experiment, []).
-:- http_handler(root(static),       serve_static, [prefix]).
+:- http_handler(root(static/'style.css'),  serve_asset('style.css'),  []).
+:- http_handler(root(static/'charts.js'),  serve_asset('charts.js'),  []).
+:- http_handler(root(static/'app.js'),     serve_asset('app.js'),     []).
 
 serve_index(Request) :-
     server_dir(D), atomic_list_concat([D, '/static/index.html'], F),
     % unsafe(true): F is an absolute path built by the server itself (never from user input)
     http_reply_file(F, [unsafe(true)], Request).
 
-serve_static(Request) :-
-    server_dir(D), atomic_list_concat([D, '/static'], S),
-    http_reply_from_files(S, [], Request).
+% Assets are served one by one with the same call that serves the index page.
+serve_asset(Name, Request) :-
+    server_dir(D), atomic_list_concat([D, '/static/', Name], F),
+    http_reply_file(F, [unsafe(true)], Request).
 
 start :-
     (   getenv('PORT', P0), atom_number(P0, Port) -> true ; Port = 8080 ),

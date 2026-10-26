@@ -344,7 +344,6 @@ function show(view) {
   if (view === 'method') loadKb().then(buildMethod).catch(buildMethod);
 }
 function init() {
-  const dark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches; document.documentElement.setAttribute('data-bs-theme', dark ? 'dark' : 'light');
   buildForm();
   document.querySelectorAll('.topbar .nav-link').forEach(a => a.onclick = e => { e.preventDefault(); show(a.dataset.v); });
   $('#go').onclick = consult; $('#bclr').onclick = () => setObs(null);
@@ -357,5 +356,6 @@ function init() {
     Object.keys(by).sort().forEach(k => { const og = el('optgroup', { label: nm[k] || k }); by[k].slice(0, 60).forEach(c => og.append(el('option', { value: c.id, text: `${c.id}, ${c.load} load, recorded label: ${c.truth.join(' + ')}` }))); S.append(og); }); }).catch(() => { });
   api('/api/reference?load=nominal').then(j => setObs(j.obs)).catch(() => { });
   api('/api/kb').then(k => { MODEL.faults = null; MODEL.causal = k.causal_model; }).catch(() => { });
+  window.__appReady = true;
 }
 document.addEventListener('DOMContentLoaded', init);
