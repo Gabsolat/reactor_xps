@@ -23,7 +23,8 @@
 
 serve_index(Request) :-
     server_dir(D), atomic_list_concat([D, '/static/index.html'], F),
-    http_reply_file(F, [], Request).
+    % unsafe(true): F is an absolute path built by the server itself (never from user input)
+    http_reply_file(F, [unsafe(true)], Request).
 
 serve_static(Request) :-
     server_dir(D), atomic_list_concat([D, '/static'], S),
